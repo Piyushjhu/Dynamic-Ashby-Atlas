@@ -5,6 +5,50 @@ Their data come from the reviewed experimental input in `ZAKI/ZAKI.csv` and
 the original reported dynamic evidence in `literature_values.json`.
 Private study measurements are excluded.
 
+## Broad static literature context
+
+The default **Static vs dynamic** page now overlays **43 published family
+ranges** with the reviewed experimental static clouds. These ranges come from
+Mike Ashby's *Material property data for engineering materials*, 5th edition
+(2021), Tables A3–A4. The review also checks the example in George, Raabe and
+Ritchie, *High-entropy alloys* (2019), Fig. 2d, and its primary-paper lineage.
+The static map is therefore not restricted to materials in the original ZAKI
+corpus or to materials with dynamic counterparts.
+
+The broad horizontal axis is **Strength**, because the references use metal
+yield, polymer yield/nonlinearity, and ceramic/glass tensile fracture strength.
+Each range retains its exact definition, bounds, table/page/row locator and
+source link. Select **Reviewed measurements** to restore the strict yield–K
+views. Published ranges are independent marginal bounds; rounded cloud
+interiors do not establish jointly measured properties or statistical density.
+
+- `data/static_literature/published_ranges.json`: editable, validated reference-range input.
+- `data/static_literature/primary_measurements.json`: separately reviewed primary experimental additions, merged into `ZAKI/ZAKI.csv` by the integration script.
+- `research/2026-10-22_static_ashby_review/`: chart review, primary-paper candidates, source links and held values.
+- `outputs/literature_only/literature_static_ashby_published_context.png` and `.pdf`: broad static map with material IDs and a reference key.
+- `outputs/literature_only/literature_static_dynamic_comparison.png` and `.pdf`: broad static context beside the existing dynamic map.
+- `outputs/literature_only/literature_static_dynamic_reviewed.png` and `.pdf`: the reviewed experimental comparison.
+- `outputs/literature_only/audit/properties/literature_static_reference_ranges.csv`: exact numeric range audit.
+- Website `data/static-reference-ranges.csv`: public reference-range download.
+
+The initial primary addition admits six scalar properties forming three CrCoNi
+yield–K_JIc condition pairs (293, 198 and 77 K) from Gludovatz et al. (2016),
+Supplementary Table 1. Reported ± terms are standard deviations. K_JIc is an
+experimentally reduced J-equivalent crack-initiation toughness, not a separately
+measured linear-elastic K_Ic or a crack-growth value. Other candidates remain
+in the held review queue.
+
+Reference ranges never enter measured record/source totals, class-ranking fits,
+source resampling, UMAP/diffusion features or HEL estimation. Only separately
+reviewed experimental scalars can augment those inputs. The 2021 table's
+descending stainless-steel yield range is held; no silent repair is made.
+Its unused descending tungsten tensile range is also documented. Ceramic A3
+cells are not treated as yield; the explicitly labeled A4 tensile values are
+used in the broad reference layer.
+
+Sources: [Ashby (2021), official Ansys/Granta tables](https://ansys.synopsys.com/content/dam/amp/2021/august/webpage-requests/education-resources-dam-upload-batch-2/material-property-data-for-eng-materials-BOKENGEN21.pdf),
+[George, Raabe & Ritchie (2019)](https://doi.org/10.1038/s41578-019-0121-4).
+
 ## Rebuild
 
 From the project root, with the project virtual environment active:
@@ -100,7 +144,8 @@ materials and conditions.
 
 The figures are saved in `outputs/literature_only/`, as PNG and editable PDF:
 
-- `literature_static_dynamic_comparison`: independent named-material clouds on the classical and dynamic axes.
+- `literature_static_dynamic_comparison`: published family ranges and reviewed named-material clouds beside the dynamic map.
+- `literature_static_dynamic_reviewed`: independent reviewed named-material clouds on the classical and dynamic axes.
 - `literature_static_dynamic_class_coverage`: broader independent class extents.
 - `literature_static_material_clouds`: a larger static map with exact-material IDs and linked author/year references.
 - `literature_static_material_clouds_by_class`: named-material clouds separated by static material class.

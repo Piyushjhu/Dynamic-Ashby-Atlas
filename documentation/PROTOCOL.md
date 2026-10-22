@@ -133,6 +133,26 @@ observations or fit covariance to them. The optional measured-pair view retains
 strict source/experiment/material/state joins; embeddings retain their complete-
 case admission rules. See `README_PROPERTY_ANALYSIS.md` for outputs and rebuilds.
 
+## Published static reference context
+
+The broad static map may add independently published material-family ranges
+from reviewed tables or charts. Store these in
+`data/static_literature/published_ranges.json`, separate from measured scalars.
+Retain source URLs, editions, digests, exact table/figure/page locators, extraction
+basis and actual per-axis strength/toughness definitions. Source-labeled polymer
+nonlinearity and ceramic/glass tensile failure are admissible only on an
+explicitly generic **Strength** reference axis; they do not become measured yield.
+The reviewed-measurement selector retains the strict yield–toughness views.
+
+Closed reference outlines are schematic independent marginal coverage with
+constant opacity. They must not claim specimen counts, supporting experimental
+record IDs, fitted density/covariance or exact joint material states. Do not
+sample artificial points inside a range. Reference ranges are excluded from
+experimental/source counts, ML rankings, source resampling, embeddings and
+HEL estimates. Malformed source bounds are held rather than silently repaired.
+Primary experimental values found during the chart review require the same
+full-text table-and-method admission used by other measured property ledgers.
+
 ## Local data import
 
 Inspect result CSV headers and the parameter/material files. Identify what each row means: a shot result, sample summary, repeated postprocessing output or stale test output. Compare timestamps/configuration and choose one authoritative result for each shot. Match HEL/spall by shot ID and target material, preserving validity flags and uncertainties.
