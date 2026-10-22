@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive, source-linked literature atlas of spall strength and Hugoniot elastic limit. Explore exact materials, inspect the evidence, and follow every value back to its paper.">
+  <meta name="theme-color" content="#f5f5f7">
+  <title>Explore material structure — Dynamic Ashby</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script type="module" src="assets/app.js"></script>
+  <script type="module" src="assets/analysis.js"></script>
+</head>
+<body data-page="embeddings">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="index.html" aria-label="Dynamic Ashby home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 4v23h24M9 22l5-8 5 3 8-11"/><ellipse cx="17" cy="15" rx="10" ry="5" transform="rotate(-30 17 15)"/></svg>Dynamic Ashby<span class="brand-tag">LITERATURE ATLAS</span></a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="main-nav">Menu <span>+</span></button>
+      <nav id="main-nav" aria-label="Main navigation"><a href="index.html">Overview</a><a href="explore.html">Explore</a><a href="static-dynamic.html">Static vs dynamic</a><a href="embeddings.html" aria-current="page">Embeddings</a><a href="sources.html">Sources</a><a href="workflow.html">Workflow</a><a href="methods.html">Methods</a><a href="contribute.html">Add data</a></nav>
+    </div>
+  </header>
+  <main id="main"><section class="page-intro page-width"><p class="eyebrow">Structure explorer</p><h1>Look for structure.<br><span>Keep the variables in view.</span></h1><p>UMAP and diffusion maps offer a second view of the reviewed measurements. Inspect the input features, source balance and missing-data limits before interpreting a cluster.</p></section>
+<section class="analysis-section page-width analysis-explorer" data-analysis-page="embeddings">
+  <div class="filter-bar analysis-filters"><label>Precomputed analysis<select id="embedding-select" aria-label="Embedding method and cohort"></select></label><label>Colour by<select id="embedding-color"><option value="class">Material class</option><option value="spall">Spall strength</option><option value="hel">HEL</option></select></label><label>Class<select id="embedding-class"><option value="">All material classes</option></select></label><button class="quiet-button" id="embedding-reset" type="button">Reset view</button></div>
+  <div id="embedding-status" class="evidence-callout" role="status">Loading the precomputed analysis…</div>
+  <div class="analysis-embedding-layout"><article class="analysis-card"><div class="analysis-card-heading"><div><p class="eyebrow" id="embedding-method-label">Precomputed coordinates</p><h2 id="embedding-title">A view of the data.</h2></div><span id="embedding-count" class="analysis-count"></span></div><div id="embedding-plot" class="analysis-plot embedding-plot" aria-label="Interactive two-dimensional embedding"></div><div id="embedding-legend" class="class-legend"></div><p class="analysis-caption">Click or keyboard-select a point to inspect its paper and input values. Axes are dimensionless embedding coordinates; orientation and distance are not physical property scales. Filtering hides points without refitting the embedding.</p><div class="toolbar-actions analysis-export"><button class="quiet-button" id="embedding-export" type="button">Save current SVG ↓</button><a href="data/analysis.json" download>Download analysis JSON ↓</a></div></article><aside class="analysis-card embedding-side"><p class="eyebrow">What went into this view</p><h3>Inputs & diagnostics</h3><div id="embedding-inputs"></div></aside></div>
+  <aside id="embedding-selection" class="analysis-selection" aria-live="polite"><p>Select an observation to inspect its source and measured values.</p></aside>
+  <details class="analysis-records"><summary>Browse this cohort without the plot <span id="embedding-record-count"></span></summary><div id="embedding-records" class="analysis-record-list"></div></details>
+  <div id="embedding-associations" class="analysis-associations"></div>
+</section>
+<section class="analysis-section page-width"><p class="eyebrow">Reading the geometry</p><h2>A cluster starts a question.<br>It does not answer it.</h2><div class="feature-grid embedding-reading"><article><span class="feature-number">01</span><h3>Separate inputs from outcomes.</h3><p>If HEL or spall is an input, separation coloured by that same property is expected. Such views describe the outcome space and cannot show which static parameters control shock response.</p></article><article><span class="feature-number">02</span><h3>Check the paper effect.</h3><p>Repeated shots from one paper share material, apparatus and reduction choices. Nearby points may reflect a study rather than a general material law. Inspect source-neighbour diagnostics and paper counts alongside class colours.</p></article><article><span class="feature-number">03</span><h3>Ask what is missing.</h3><p>A complete-case cohort can be small and selective. Missing static properties are not filled by class averages. An empty analysis is retained with its reason instead of inventing a multivariable relationship.</p></article></div></section>
+<section class="analysis-section page-width"><div class="evidence-callout"><strong>Exploration, not a causal or predictive result</strong><p>UMAP emphasises local neighbourhoods; diffusion coordinates describe connectivity through a kernel graph. Neither method establishes that a parameter causes a change in spall strength or HEL. Global cluster gaps, axis directions and cluster areas require particular caution.</p><p>Changing input features, scaling, neighbours or random seed can change the picture. The downloadable payload records the feature set, cohort, method and available stability diagnostics so that the plotted view can be reviewed.</p></div><div id="embedding-methods" class="analysis-methods"></div><div id="embedding-references" class="analysis-references"></div></section>
+</main>
+  <footer class="site-footer">
+    <div><a class="footer-brand" href="index.html">Dynamic Ashby</a><p>Materials under shock. Evidence in the open.</p></div>
+    <div class="footer-links"><a href="methods.html">How to read the map</a><a href="data/literature.csv" download>Download CSV ↗</a><a href="https://github.com/Piyushjhu/Dynamic-Ashby-Atlas" target="_blank" rel="noopener noreferrer">Repository ↗</a></div>
+    <p class="build-note" data-build-note>Loading the literature compilation…</p>
+  </footer>
+  <div id="toast" class="toast" role="status"></div>
+</body>
+</html>

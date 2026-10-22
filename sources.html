@@ -9,6 +9,7 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/styles.css">
   <script type="module" src="assets/app.js"></script>
+  <script type="module" src="assets/analysis.js"></script>
 </head>
 <body data-page="sources">
   <a class="skip" href="#main">Skip to content</a>
@@ -16,12 +17,12 @@
     <div class="nav-shell">
       <a class="brand" href="index.html" aria-label="Dynamic Ashby home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 4v23h24M9 22l5-8 5 3 8-11"/><ellipse cx="17" cy="15" rx="10" ry="5" transform="rotate(-30 17 15)"/></svg>Dynamic Ashby<span class="brand-tag">LITERATURE ATLAS</span></a>
       <button class="menu-button" type="button" aria-expanded="false" aria-controls="main-nav">Menu <span>+</span></button>
-      <nav id="main-nav" aria-label="Main navigation"><a href="index.html">Overview</a><a href="explore.html">Explore</a><a href="sources.html" aria-current="page">Sources</a><a href="workflow.html">Workflow</a><a href="methods.html">Methods</a><a href="contribute.html">Add data</a></nav>
+      <nav id="main-nav" aria-label="Main navigation"><a href="index.html">Overview</a><a href="explore.html">Explore</a><a href="static-dynamic.html">Static vs dynamic</a><a href="embeddings.html">Embeddings</a><a href="sources.html" aria-current="page">Sources</a><a href="workflow.html">Workflow</a><a href="methods.html">Methods</a><a href="contribute.html">Add data</a></nav>
     </div>
   </header>
   <main id="main"><section class="page-intro page-width"><p class="eyebrow">The source library</p><h1>Every paper.<br><span>A traceable starting point.</span></h1><p>Browse the registered literature, see what has been extracted, and open the original publication. Registration alone does not imply that numerical data are plotted.</p><div class="hero-actions"><a class="button primary" href="data/literature.csv" download>Download all literature · CSV ↓</a><a class="text-link" href="data/references.bib" download>Bibliography · BibTeX ↓</a></div></section>
 <section class="page-width source-library">
-  <div class="library-toolbar"><label class="search-field"><span class="sr-only">Search papers</span><input id="source-search" type="search" placeholder="Search author, title, material or DOI…"></label><label class="sr-only" for="source-status">Extraction status</label><select id="source-status"><option value="all">All registered sources</option><option value="extracted">With extracted records</option><option value="verified">With verified same-shot pairs</option><option value="pending">No extracted records yet</option></select><label class="sr-only" for="source-class">Material class</label><select id="source-class"><option value="">All material classes</option></select></div>
+  <div class="library-toolbar"><label class="search-field"><span class="sr-only">Search papers</span><input id="source-search" type="search" placeholder="Search author, title, material, property or DOI…"></label><label class="sr-only" for="source-status">Extraction status</label><select id="source-status"><option value="all">All registered sources</option><option value="extracted">With extracted evidence</option><option value="properties">With reviewed property values</option><option value="verified">With verified same-shot pairs</option><option value="pending">No extracted evidence yet</option></select><label class="sr-only" for="source-class">Material class</label><select id="source-class"><option value="">All material classes</option></select></div>
   <div class="library-summary"><span id="source-count" role="status">Loading sources…</span><span>Original publication links ↗</span></div>
   <div id="source-list"></div>
 </section>

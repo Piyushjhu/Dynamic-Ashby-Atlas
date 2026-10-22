@@ -2,7 +2,7 @@
 export const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const fmt = value => Number.isFinite(value) ? Number(value.toPrecision(3)).toLocaleString('en-US', {maximumSignificantDigits:3}) : 'Unreported';
 export const range = (lo, hi) => Number.isFinite(lo) && Number.isFinite(hi) ? lo === hi ? fmt(lo) : `${fmt(lo)}–${fmt(hi)}` : 'Unreported';
-export const methodName = value => ({verified_pair:'Verified same-shot pair',reported_pair:'Reported coordinates',reported_range:'Reported range',independent_reported:'Independent reported values',matched_same_source_state:'Same-source state match',cross_paper_same_material:'Cross-paper material match',material_state_substitute:'Material-state substitute',material_composition_substitute:'Composition substitute',yield_model:'Yield-based HEL estimate',unresolved:'Unresolved'}[value] || String(value || 'Unresolved').replaceAll('_',' '));
+export const methodName = value => ({verified_pair:'Verified same-shot pair',xml_reviewed_pair:'XML-reviewed same-shot pair · visual review pending',reported_pair:'Reported coordinates',reported_range:'Reported range',independent_reported:'Independent reported values',matched_same_source_state:'Same-source state match',cross_paper_same_material:'Cross-paper material match',material_state_substitute:'Material-state substitute',material_composition_substitute:'Composition substitute',yield_model:'Yield-based HEL estimate',unresolved:'Unresolved'}[value] || String(value || 'Unresolved').replaceAll('_',' '));
 
 export function enclosure(bounds, minimum=.075) {
   const lo = [Math.log10(bounds[0]), Math.log10(bounds[2])];

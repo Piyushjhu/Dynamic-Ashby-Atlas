@@ -17,7 +17,7 @@ The cloud and class-count figures have matching 300-dpi PNG and editable PDF exp
   with a class-grouped key of exact material names and linked author/year citations.
 - `literature_material_clouds_by_class.png` / `.pdf`: thirteen class panels with
   identical axes, material colours, original-record counts and individual reference keys.
-- `literature_data_by_class.png` / `.pdf`: all 196 original evidence records by
+- `literature_data_by_class.png` / `.pdf`: all 310 original evidence records by
   material class, split into verified pairs, other reported HEL/spall evidence,
   inferred-coordinate records, unresolved cases, reported zero and excluded records.
   The side columns give cloud coverage, material-cloud counts and papers with extracted data.
@@ -34,15 +34,14 @@ consistent between the two figures. The configured copper variants share a colou
 separate named clouds; polycarbonate variants follow the same rule. These colour
 aliases do not merge materials or modify their recorded identities.
 
-The current view contains **55 material clouds from 164 positive literature records**, spanning twelve classes, including Zr alloys (mauve). Thirteen panels include the unresolved fibre-composites class. Twenty-nine unsupported records remain unresolved; two reviewed records are excluded from all figures. AD95 alumina's **0 GPa** spall stays zero in the common CSV and is noted separately from logarithmic axes. Grady (1995) ranges are grade-unspecified summaries with possible overlap; G13 and SN282 are abstract-level summaries.
+The current view contains **65 material clouds from 219 positive literature records**, spanning twelve classes, including Zr alloys (mauve). Thirteen panels include the unresolved fibre-composites class. Seventy unsupported records remain unresolved; twenty records are excluded from all figures, including eighteen alternative reductions of existing experiments. AD95 alumina's **0 GPa** spall stays zero in the common CSV and is noted separately from logarithmic axes. Grady (1995) ranges are grade-unspecified summaries with possible overlap; G13 and SN282 are abstract-level summaries.
 
-The 164 cloud records comprise **85 verified same-shot pairs, 38 other records
-with reported HEL/spall properties, and 41 records with inferred coordinates**.
-Together with 29 unresolved, two excluded and one zero-spall record, these
-account for all 196 evidence records. The count chart includes the zero and
+The 219 cloud records comprise **85 visually verified same-shot pairs, 35 XML-reviewed same-shot pairs, 38 other records with reported HEL/spall properties, and 61 records with inferred coordinates**.
+Together with 70 unresolved, twenty excluded and one zero-spall record, these
+account for all 310 evidence records. The count chart includes the zero and
 excluded cases for accounting only; they never contribute to a positive cloud.
-Counts refer to extracted evidence records, not experiment totals. The 51
-source-only rows in the common CSV have no extracted record to count. Per-class
+Counts refer to extracted evidence records, not experiment totals. The 71
+source-only rows in the dynamic common CSV have no dynamic record to count; static-only paper properties are available in ZAKI/ZAKI.csv and the website property download. Per-class
 paper counts overlap when one paper covers several classes.
 
 The common data/source export for all views is project-root `literature_data.csv`. The following per-view files audit geometry and completion.
@@ -76,6 +75,8 @@ create additional cloud members.
 
 The literature-only verified-shot preview (`literature_shot_pairs.png` / `.pdf` / `.svg`) is also saved in this same folder.
 
+The same run also refreshes static/dynamic comparison and UMAP/diffusion figures. See [the property-analysis guide](README_PROPERTY_ANALYSIS.md) for definitions, matched-data limits and numerical audit paths.
+
 ## Linked exports
 
 The following supporting files are in `outputs/literature_only/audit/clouds/`. The one common data/source table remains project-root `literature_data.csv`.
@@ -84,7 +85,7 @@ The following supporting files are in `outputs/literature_only/audit/clouds/`. T
   material/class, colour, opacity, record counts, methods, assumptions and paper URLs.
 - `class_summary.csv`: all thirteen class totals, separated into the six evidence
   statuses, plus numbers of material clouds, named materials and contributing papers.
-- `cloud_members.csv`: all 196 original literature records with original stresses,
+- `cloud_members.csv`: all 310 original literature records with original stresses,
   completed coordinate bounds, cloud IDs or unresolved/zero status and provenance.
 - `cloud_sources.csv`: each cloud's contributing papers, linked citations, member
   record IDs and donor/model input URLs.
