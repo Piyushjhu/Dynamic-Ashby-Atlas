@@ -1,4 +1,5 @@
 import {AshbyPlot, esc, fmt, range, methodName, filteredClouds} from './plot.js';
+import {loadConnectedSources, initConnections, renderConnectionStatus} from './connections.js';
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
@@ -6,19 +7,26 @@ const safeUrl = value => {try{const u=new URL(value);return ['https:','http:'].i
 const external = (url,label,cls='') => safeUrl(url)?`<a class="${cls}" href="${esc(safeUrl(url))}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>`:'';
 const split = value => [...new Set(String(value||'').split(';').map(v=>v.trim()).filter(Boolean))];
 const swatch = color => `<i class="swatch" style="--color:${/^#[0-9a-f]{6}$/i.test(color)?color:'#6e6e73'}" aria-hidden="true"></i>`;
-let data,sourceMap,recordMap;
+let data,sourceMap,recordMap,connected={sources:[],records:[],clouds:[],classes:[],meta:{counts:{records:0,clouds:0,plotted:0}}};
+function refreshEvidenceMaps(){
+  sourceMap=new Map(data.sources.map(s=>[s.source_id,s]));
+  for(const s of connected.sources)sourceMap.set(`EXP-SOURCE-${s.id}`,{...s,connected:true});
+  recordMap=new Map([...data.records,...connected.records].map(r=>[r.id,r]));
+}
 function toast(message){const el=$('#toast');el.textContent=message;el.classList.add('visible');setTimeout(()=>el.classList.remove('visible'),2600);}
 function property(value,lo,hi){return Number.isFinite(value)?fmt(value):range(lo,hi);}
 function recordMetrics(r,plot=false){return `<div class="property-grid"><div><small>${plot?'Plotting HEL':'Reported HEL'}</small><strong>${plot?range(r.plotHelMin,r.plotHelMax):property(r.hel,r.helMin,r.helMax)}</strong><span class="unit">GPa</span></div><div><small>${plot?'Plotting spall':'Reported spall'}</small><strong>${plot?range(r.plotSpallMin,r.plotSpallMax):property(r.spall,r.spallMin,r.spallMax)}</strong><span class="unit">GPa</span></div></div>`;}
 function recordProvenance(r,compact=false){
   const readable=value=>String(value||'').replaceAll('_',' ');
   const rows=[['Observation',r.observationKind],['Experimental basis',r.evidenceBasis],['Source review',r.sourceReviewStatus]].filter(([,v])=>v);
-  if(!rows.length&&!r.stressDefinition&&!r.reportedDerivation)return '';
+  if(!rows.length&&!r.stressDefinition&&!r.reportedDerivation&&!(r.connected&&(r.reportedValues||r.sourceSha256)))return '';
   const definition=r.stressDefinition?`<p><strong>Stress definition</strong><br>${esc(r.stressDefinition)}</p>`:'';
   if(compact)return `${rows.length?`<p>${rows.map(([k,v])=>`${esc(k)}: ${esc(readable(v))}`).join(' · ')}</p>`:''}${definition}`;
   const units=r.sourceUnits?`<p>Original units: ${esc(typeof r.sourceUnits==='object'?JSON.stringify(r.sourceUnits):r.sourceUnits)}</p>`:'';
+  const original=r.connected&&r.reportedValues?`<p><strong>Original reported values</strong></p><pre class="connected-reported-values">${esc(typeof r.reportedValues==='object'?JSON.stringify(r.reportedValues,null,2):r.reportedValues)}</pre>`:'';
+  const hash=r.connected&&r.sourceSha256?`<p class="connected-source-hash"><strong>Source content SHA-256</strong><br>${esc(r.sourceSha256)}</p>`:'';
   const reduction=r.reportedDerivation&&r.reportedDerivation!==r.stressDefinition?`<p>${esc(r.reportedDerivation)}</p>`:'';
-  return `<div class="detail-section"><h3>Measurement definition and review</h3>${definition}<dl>${rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(readable(v))}</dd>`).join('')}</dl>${units}${reduction}</div>`;
+  return `<div class="detail-section"><h3>Measurement definition and review</h3>${definition}<dl>${rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(readable(v))}</dd>`).join('')}</dl>${units}${original}${hash}${reduction}</div>`;
 }
 function coverageRows(){const c=data.meta.counts;return [['Positive cloud records',c.cloudRecords],['Unresolved counterparts',c.unresolved],['Reported zero spall',c.zero],['Reviewed exclusions',c.excluded],['All evidence records',c.records]].map(([label,n])=>`<div class="ledger-row"><span>${label}</span><strong>${n}</strong></div>`).join('');}
 
@@ -27,7 +35,11 @@ async function boot(){
   try{
     const response=await fetch(new URL('../data/catalogue.json',import.meta.url),{cache:'no-cache'});
     if(!response.ok)throw new Error(`Data request returned ${response.status}`);
-    data=await response.json();sourceMap=new Map(data.sources.map(s=>[s.source_id,s]));recordMap=new Map(data.records.map(r=>[r.id,r]));
+    data=await response.json();
+    if($('#main-plot')||$('#connection-form'))connected=await loadConnectedSources();
+    refreshEvidenceMaps();
+    renderConnectionStatus(connected);
+    initConnections(connected);
     $$('[data-count]').forEach(el=>el.textContent=data.meta.counts[el.dataset.count]?.toLocaleString()??'—');
     $$('[data-minimum-span]').forEach(el=>el.textContent=data.meta.minimumSpanDecades);
     $$('[data-build-note]').forEach(el=>el.textContent=`Literature review: ${data.meta.reviewDate} · Data revision ${data.meta.dataHash.slice(0,10)} · ${data.meta.counts.records} original records · Literature only`);
@@ -51,17 +63,25 @@ async function boot(){
 
 function initExplorer(){
   const params=new URLSearchParams(location.search);
-  const state={view:params.get('view')==='pairs'?'pairs':'clouds',class:params.get('class')||'',evidence:params.get('evidence')||'all',q:params.get('q')||'',source:params.get('source')||'',material:params.get('material')||'',selected:params.get('record')||'',labels:true};
+  const state={layer:['literature','connected','both'].includes(params.get('layer'))?params.get('layer'):'literature',view:params.get('view')==='pairs'?'pairs':'clouds',class:params.get('class')||'',evidence:params.get('evidence')||'all',q:params.get('q')||'',source:params.get('source')||'',material:params.get('material')||'',selected:params.get('record')||'',labels:true};
   if(!['all','reported','inferred'].includes(state.evidence))state.evidence='all';
   let objects=[],activeRecords=[];
   const plot=new AshbyPlot($('#main-plot'),{onSelect:select});
   const classFilter=$('#class-filter');
-  for(const c of data.classes){const option=document.createElement('option');option.value=c.Material_Class;option.textContent=c.Material_Class;classFilter.append(option);}
-  if(!data.classes.some(c=>c.Material_Class===state.class))state.class='';
-  classFilter.value=state.class;$('#evidence-filter').value=state.evidence;$('#plot-search').value=state.q;
+  let classRows=[];
+  function updateClasses(){
+    classRows=[...new Map([...data.classes,...connected.classes].map(c=>[c.Material_Class,c])).values()];
+    classFilter.replaceChildren(new Option('All material classes',''));
+    for(const c of classRows)classFilter.append(new Option(c.Material_Class,c.Material_Class));
+    if(!classRows.some(c=>c.Material_Class===state.class))state.class='';
+    classFilter.value=state.class;
+  }
+  updateClasses();
+  const connectedPlotData=()=>({...connected,meta:{...connected.meta,minimumSpanDecades:data.meta.minimumSpanDecades}});
+  $('#data-layer').value=state.layer;classFilter.value=state.class;$('#evidence-filter').value=state.evidence;$('#plot-search').value=state.q;
   if(state.material&&!state.q)$('#plot-search').value=state.material;
   function syncUrl(){
-    const p=new URLSearchParams();if(state.view==='pairs')p.set('view','pairs');if(state.class)p.set('class',state.class);if(state.evidence!=='all')p.set('evidence',state.evidence);if(state.q)p.set('q',state.q);if(state.source)p.set('source',state.source);if(state.material)p.set('material',state.material);if(state.selected){if(state.view==='pairs'||recordMap.has(state.selected))p.set('record',state.selected);else{const c=objects.find(c=>c.id===state.selected);if(c)p.set('material',c.material);}}
+    const p=new URLSearchParams();if(state.layer!=='literature')p.set('layer',state.layer);if(state.view==='pairs')p.set('view','pairs');if(state.class)p.set('class',state.class);if(state.evidence!=='all')p.set('evidence',state.evidence);if(state.q)p.set('q',state.q);if(state.source)p.set('source',state.source);if(state.material)p.set('material',state.material);if(state.selected){if(state.view==='pairs'||recordMap.has(state.selected))p.set('record',state.selected);else{const c=objects.find(c=>c.id===state.selected);if(c)p.set('material',c.material);}}
     history.replaceState(null,'',location.pathname+(p.size?'?'+p.toString():''));
   }
   function matches(r){
@@ -71,35 +91,39 @@ function initExplorer(){
     return true;
   }
   function render({reset=true}={}){
-    activeRecords=data.records.filter(r=>r.status==='positive_cloud'&&matches(r));
+    const layerRecords=state.layer==='literature'?data.records:state.layer==='connected'?connected.records:[...data.records,...connected.records];
+    activeRecords=layerRecords.filter(r=>r.status==='positive_cloud'&&matches(r));
     if(state.view==='pairs'){
-      const colors=new Map(data.classes.map(c=>[c.Material_Class,c.Color_Hex]));
+      const colors=new Map(classRows.map(c=>[c.Material_Class,c.Color_Hex]));
       objects=activeRecords.filter(r=>r.verified&&r.hel>0&&r.spall>0).map(r=>({...r,color:colors.get(r.class)}));
-    }else objects=filteredClouds(data,activeRecords);
+    }else objects=[...(state.layer==='connected'?[]:filteredClouds(data,activeRecords.filter(r=>!r.connected))),...(state.layer==='literature'?[]:filteredClouds(connectedPlotData(),activeRecords.filter(r=>r.connected)))];
     if(state.material&&!state.selected){const c=objects.find(o=>o.material===state.material);if(c)state.selected=c.id;}
     if(state.selected&&!objects.some(o=>o.id===state.selected)&&!activeRecords.some(r=>r.id===state.selected))state.selected='';
     plot.setData(objects,{reset,labels:state.labels,selected:recordMap.has(state.selected)&&state.view==='clouds'?recordMap.get(state.selected).cloudId:state.selected});
     $$('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===state.view));
     $('#evidence-filter').disabled=state.view==='pairs';
-    const count=state.view==='pairs'?`${objects.length} verified same-shot pairs`:`${objects.length} material clouds · ${activeRecords.length} original records`;
+    $('[data-view="pairs"]').textContent=state.layer==='literature'?'Verified pairs':'Same-experiment pairs';
+    const count=state.view==='pairs'?`${objects.length} ${state.layer==='literature'?'verified same-shot':'same-experiment'} pairs`:`${objects.length} material clouds · ${activeRecords.length} original records`;
     $('#map-count').textContent=count+(state.source?` · source ${state.source}`:'');
+    const layerNote=$('#connected-layer-note');layerNote.hidden=state.layer==='literature';
+    layerNote.innerHTML=state.layer==='literature'?'':`<strong>Connected experiments are a separate data layer.</strong> ${connected.records.length?'They retain their collection, material state and measurement provenance. Literature counts and ML analyses remain unchanged.':'No approved experimental pairs are currently available. Discovery sources and held records remain visible in the source status below.'} <a href="#connected-status-section">View sync status ↓</a>`;
     $('#result-title').textContent=state.view==='pairs'?'Measurements in view':'Materials in view';$('#result-count').textContent=`${objects.length} selectable ${state.view==='pairs'?'records':'materials'}`;
-    $('#material-results').innerHTML=objects.length?objects.map(o=>`<button class="material-row" type="button" data-select="${esc(o.id)}" aria-pressed="${o.id===state.selected}">${swatch(o.color)}<span><strong>${esc(o.material)}</strong><small>${state.view==='pairs'?`${esc(o.citation)} · ${esc(o.id)} · HEL ${fmt(o.hel)}, spall ${fmt(o.spall)} GPa`:`${esc(o.class)} · ${o.count} records · ${o.sourceIds.length} sources${o.inferred?` · ${o.inferred} inferred`:''}`}</small></span></button>`).join(''):'<p class="no-results">No supported data match these filters. Try another class or clear your search. Unresolved evidence remains in the source library.</p>';
-    $('#class-legend').innerHTML=data.classes.map(c=>`<button class="legend-button" type="button" data-class="${esc(c.Material_Class)}" aria-pressed="${state.class===c.Material_Class}">${swatch(c.Color_Hex)}${esc(c.Material_Class)}</button>`).join('');
+    $('#material-results').innerHTML=objects.length?objects.map(o=>`<button class="material-row" type="button" data-select="${esc(o.id)}" aria-pressed="${o.id===state.selected}">${swatch(o.color)}<span><strong>${esc(o.material)}</strong><small>${state.view==='pairs'?`${esc(o.citation)} · ${esc(o.id)} · HEL ${fmt(o.hel)}, spall ${fmt(o.spall)} GPa`:`${o.connected?'Connected · ':''}${esc(o.class)} · ${o.count} records · ${o.sourceIds.length} sources${o.inferred?` · ${o.inferred} inferred`:''}`}</small></span></button>`).join(''):'<p class="no-results">No supported data match these filters. Try another class or clear your search. Unresolved evidence remains in the source library.</p>';
+    $('#class-legend').innerHTML=classRows.map(c=>`<button class="legend-button" type="button" data-class="${esc(c.Material_Class)}" aria-pressed="${state.class===c.Material_Class}">${swatch(c.Color_Hex)}${esc(c.Material_Class)}</button>`).join('');
     renderSelection();syncUrl();
   }
   function renderSelection(){
     const panel=$('#selection-panel');
     if(!state.selected){
-      panel.innerHTML=`<div class="empty-selection"><svg viewBox="0 0 90 65" aria-hidden="true"><path d="M10 5v48h70" stroke="#bcbcc4" fill="none"/><ellipse cx="44" cy="29" rx="27" ry="12" transform="rotate(-28 44 29)" fill="#e4ecf4" stroke="#7b9ab7"/><path d="m63 29 8 20 3-8 9-2Z" fill="#fafafb" stroke="#52525b"/></svg><h2>Follow the evidence.</h2><p>Select a ${state.view==='pairs'?'measurement':'material cloud'} to see exact materials, property bounds and linked papers.</p><button class="quiet-button" id="select-example" type="button">${objects.length?'Inspect the first material →':'Clear filters to explore →'}</button></div>`;return;
+      panel.innerHTML=`<div class="empty-selection"><svg viewBox="0 0 90 65" aria-hidden="true"><path d="M10 5v48h70" stroke="#bcbcc4" fill="none"/><ellipse cx="44" cy="29" rx="27" ry="12" transform="rotate(-28 44 29)" fill="#e4ecf4" stroke="#7b9ab7"/><path d="m63 29 8 20 3-8 9-2Z" fill="#fafafb" stroke="#52525b"/></svg><h2>Follow the evidence.</h2><p>Select a ${state.view==='pairs'?'measurement':'material cloud'} to see exact materials, property bounds and linked sources.</p><button class="quiet-button" id="select-example" type="button">${objects.length?'Inspect the first material →':'Clear filters to explore →'}</button></div>`;return;
     }
     const record=recordMap.get(state.selected);
     if(record){panel.innerHTML=renderRecord(record,state.view==='clouds');return;}
     const cloud=objects.find(o=>o.id===state.selected);if(!cloud){state.selected='';renderSelection();return;}
-    const members=cloud.recordIds.map(id=>recordMap.get(id));
+    const members=cloud.recordIds.map(id=>recordMap.get(id)).filter(Boolean);
     const donors=[...new Set(members.flatMap(r=>split(r.helDonors).concat(split(r.spallDonors))).map(id=>id.replace('LIT:','')))];
     const donorSources=[...new Set(donors.map(id=>recordMap.get(id)?.sourceId).filter(Boolean))].filter(id=>!cloud.sourceIds.includes(id));
-    panel.innerHTML=`<button class="detail-close" type="button" data-close aria-label="Clear selection">×</button><p class="eyebrow">${esc(cloud.class)} · ${esc(cloud.id)}</p><h2>${esc(cloud.material)}</h2><p class="state-text">Pooled independent property coverage</p><div class="property-grid"><div><small>Input HEL extent</small><strong>${range(cloud.helMin,cloud.helMax)}</strong><span class="unit">GPa</span></div><div><small>Input spall extent</small><strong>${range(cloud.spallMin,cloud.spallMax)}</strong><span class="unit">GPa</span></div></div><div class="detail-stat">${cloud.count} original records · ${cloud.sourceIds.length} direct sources<br>${cloud.verified} verified pairs · ${cloud.inferred} records with inferred coordinates</div><span class="detail-badge">${cloud.basis==='yield_model'?'Includes yield-based HEL':cloud.basis==='matched_or_substituted'?'Includes matched / substituted coordinates':'Reported coordinates'}</span>${cloud.padded?'<span class="detail-badge">Minimum drawing width applied</span>':''}<div class="detail-section"><h3>Publications behind this cloud</h3>${cloud.sourceIds.map(id=>sourceBlock(id,members.filter(r=>r.sourceId===id).length)).join('')}</div>${donorSources.length?`<div class="detail-section"><h3>Additional donor publications</h3>${donorSources.map(id=>sourceBlock(id)).join('')}</div>`:''}<div class="detail-section"><h3>Inspect the original records</h3>${members.map(r=>`<button class="record-link" data-record="${esc(r.id)}" type="button">${esc(r.id)} · ${esc(r.citation)}<small>${esc(r.state||'Material state unreported')} · ${esc(methodName(r.completion))}</small></button>`).join('')}</div><div class="detail-section"><p>These are input extents. The drawn ellipse may extend beyond them to enclose the bounds. It is not a confidence region.</p><a class="text-link" href="methods.html#geometry">How this cloud was drawn →</a></div>`;
+    panel.innerHTML=`<button class="detail-close" type="button" data-close aria-label="Clear selection">×</button><p class="eyebrow">${esc(cloud.class)} · ${esc(cloud.id)}</p><h2>${esc(cloud.material)}</h2><p class="state-text">${cloud.connected?'Connected experimental collection':'Pooled independent property coverage'}</p><div class="property-grid"><div><small>Input HEL extent</small><strong>${range(cloud.helMin,cloud.helMax)}</strong><span class="unit">GPa</span></div><div><small>Input spall extent</small><strong>${range(cloud.spallMin,cloud.spallMax)}</strong><span class="unit">GPa</span></div></div><div class="detail-stat">${cloud.count} original records · ${cloud.sourceIds.length} direct sources<br>${cloud.verified} ${cloud.connected?'same-experiment':'verified'} pairs · ${cloud.inferred} records with inferred coordinates</div><span class="detail-badge">${cloud.basis==='yield_model'?'Includes yield-based HEL':cloud.basis==='matched_or_substituted'?'Includes matched / substituted coordinates':'Reported coordinates'}</span>${cloud.padded?'<span class="detail-badge">Minimum drawing width applied</span>':''}<div class="detail-section"><h3>${cloud.connected?'Experimental collections behind this cloud':'Publications behind this cloud'}</h3>${cloud.sourceIds.map(id=>sourceBlock(id,members.filter(r=>r.sourceId===id).length)).join('')}</div>${donorSources.length?`<div class="detail-section"><h3>Additional donor publications</h3>${donorSources.map(id=>sourceBlock(id)).join('')}</div>`:''}<div class="detail-section"><h3>Inspect the original records</h3>${members.map(r=>`<button class="record-link" data-record="${esc(r.id)}" type="button">${esc(r.id)} · ${esc(r.citation)}<small>${esc(r.state||'Material state unreported')} · ${esc(r.connected?'Same-experiment measurement':methodName(r.completion))}</small></button>`).join('')}</div><div class="detail-section"><p>These are input extents. The drawn ellipse may extend beyond them to enclose the bounds. It is not a confidence region.</p><a class="text-link" href="methods.html#geometry">How this cloud was drawn →</a></div>`;
   }
   function select(id){state.selected=id;plot.selected=recordMap.has(id)&&state.view==='clouds'?recordMap.get(id).cloudId:id;plot.draw();renderSelection();$$('[data-select]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.select===id));syncUrl();}
   function clear(){Object.assign(state,{class:'',q:'',source:'',material:'',evidence:'all',selected:''});classFilter.value='';$('#plot-search').value='';$('#evidence-filter').value='all';render();}
@@ -110,6 +134,7 @@ function initExplorer(){
     if(event.target.closest('#select-example')){objects.length?select(objects[0].id):clear();}
   });
   $('#material-results').addEventListener('click',event=>{const b=event.target.closest('[data-select]');if(b){select(b.dataset.select);if(innerWidth<850)$('#selection-panel').scrollIntoView({behavior:'smooth',block:'nearest'});}});
+  $('#data-layer').addEventListener('change',()=>{state.layer=$('#data-layer').value;state.selected='';state.source='';state.material='';render();});
   classFilter.addEventListener('change',()=>{state.class=classFilter.value;state.selected='';render();});
   $('#evidence-filter').addEventListener('change',()=>{state.evidence=$('#evidence-filter').value;state.selected='';render();});
   $('#plot-search').addEventListener('input',()=>{state.q=$('#plot-search').value;state.material='';state.selected='';render();});
@@ -121,11 +146,17 @@ function initExplorer(){
   $('#share-view').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);toast('Link copied with the current filters and selection.');}catch{toast('Copy the current address to share this view.');}});
   $('#export-svg').addEventListener('click',()=>{const url=URL.createObjectURL(new Blob([plot.export()],{type:'image/svg+xml'}));const a=document.createElement('a');a.href=url;a.download=`dynamic-ashby-${state.view}.svg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
   $('#coverage-ledger').innerHTML=coverageRows()+`<div class="detail-section"><h3>Class coverage · clouds / all records</h3>${data.classes.map(c=>`<div class="coverage-class"><span>${swatch(c.Color_Hex)}${esc(c.Material_Class)}</span><span>${c.N_Material_Clouds} / ${c.N_Original_Records}</span></div>`).join('')}</div>`;
+  document.addEventListener('ashby-connected-update',event=>{
+    const updated=event.detail;
+    if(updated.generatedAt===connected.generatedAt&&!updated.loadError)return;
+    connected=updated;refreshEvidenceMaps();updateClasses();render({reset:false});
+  });
   render();
 }
 
 function sourceBlock(id,count){
   const s=sourceMap.get(id);if(!s)return '';
+  if(s.connected)return `<div class="detail-source">${external(s.url,s.label||s.id,'citation-link')}<small>Connected collection · ${esc(s.id)}</small><small>Status: ${esc(String(s.status||'unconfigured').replaceAll('_',' '))}</small>${s.lastSuccess?`<small>Last successful sync: ${esc(new Date(s.lastSuccess).toLocaleString())}</small>`:''}<a href="contribute.html#connected-source-${encodeURIComponent(s.id)}" class="text-link">Collection sync details →</a></div>`;
   return `<div class="detail-source">${external(s.url,s.citation_label||`${s.authors} (${s.year})`,'citation-link')}<small>${esc(s.source_id)}${count?` · ${count} records in this view`:''}</small><a href="sources.html#${encodeURIComponent(id)}" class="text-link" style="font-size:10px">Publication details →</a></div>`;
 }
 
@@ -135,7 +166,7 @@ function renderRecord(r,showBack=false){
   if(r.inferred){
     inference=`<div class="detail-section"><h3>Separate plotting coordinates</h3>${recordMetrics(r,true)}<p>${esc(r.assumptions||'See the linked donor/model inputs below.')}</p>${['hel','spall'].map(metric=>`<h3>${metric==='hel'?'HEL':'Spall'} basis: ${esc((r[metric+'Basis']||'').replaceAll('_',' '))}</h3><p>${esc(r[metric+'Citations'])}<br>${esc(r[metric+'Locators'])}</p>${split(r[metric+'Urls']).map(url=>external(url,'Open coordinate input','citation-link')).join('')}${split(r[metric+'Donors']).map(id=>`<button type="button" class="record-link" data-record="${esc(id.replace('LIT:',''))}">Inspect donor ${esc(id)}</button>`).join('')}`).join('')}${r.modelId?`<p>Model: ${esc(r.modelId)}. <a href="methods.html#completion">Assumptions and limitations →</a></p>`:''}</div>`;
   }
-  return `${showBack&&r.cloudId?`<button type="button" class="back-link" data-back-cloud="${esc(r.cloudId)}">← Back to material cloud</button>`:''}<button class="detail-close" type="button" data-close aria-label="Clear selection">×</button><p class="eyebrow">${esc(r.class)} · ${esc(r.id)}</p><h2>${esc(r.material)}</h2><p class="state-text">${esc(r.state||'Material state unreported')}</p><span class="detail-badge">${esc(methodName(r.completion))}</span>${r.shot?`<span class="detail-badge">Shot ${esc(r.shot)}</span>`:''}${recordMetrics(r)}<div class="detail-section"><h3>Original publication</h3>${sourceBlock(r.sourceId)}<p><strong>Extraction locator</strong><br>${esc(r.locator||'Unreported')}</p><p>${esc(r.extraction||'')}</p></div>${recordProvenance(r)}${inference}<div class="detail-section"><h3>Test conditions</h3><dl>${conditions.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v||'Unreported')}</dd>`).join('')}</dl>${r.strainRateDefinition?`<p style="margin-top:12px">Rate definition: ${esc(r.strainRateDefinition)}</p>`:''}</div><div class="detail-section"><h3>Reported uncertainty</h3><p>HEL: ${Number.isFinite(r.helUncertainty)?`±${fmt(r.helUncertainty)} GPa`:'unreported'}<br>Spall: ${Number.isFinite(r.spallUncertainty)?`±${fmt(r.spallUncertainty)} GPa`:'unreported'}</p><p>${esc(r.uncertaintyDefinition||'Definition unreported')}</p></div>${r.notes?`<div class="detail-section"><h3>Record notes</h3><p>${esc(r.notes)}</p></div>`:''}`;
+  return `${showBack&&r.cloudId?`<button type="button" class="back-link" data-back-cloud="${esc(r.cloudId)}">← Back to material cloud</button>`:''}<button class="detail-close" type="button" data-close aria-label="Clear selection">×</button><p class="eyebrow">${esc(r.class)} · ${esc(r.id)}</p><h2>${esc(r.material)}</h2><p class="state-text">${esc(r.state||'Material state unreported')}</p><span class="detail-badge">${esc(r.connected?'Connected experimental measurement':methodName(r.completion))}</span>${r.shot?`<span class="detail-badge">Shot ${esc(r.shot)}</span>`:''}${recordMetrics(r)}<div class="detail-section"><h3>${r.connected?'Experimental data source':'Original publication'}</h3>${sourceBlock(r.sourceId)}${r.connected?external(r.url,'Open this dataset','citation-link'):''}<p><strong>Extraction locator</strong><br>${esc(r.locator||'Unreported')}</p><p>${esc(r.extraction||'')}</p></div>${recordProvenance(r)}${inference}<div class="detail-section"><h3>Test conditions</h3><dl>${conditions.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v||'Unreported')}</dd>`).join('')}</dl>${r.strainRateDefinition?`<p style="margin-top:12px">Rate definition: ${esc(r.strainRateDefinition)}</p>`:''}</div><div class="detail-section"><h3>Reported uncertainty</h3><p>HEL: ${Number.isFinite(r.helUncertainty)?`±${fmt(r.helUncertainty)} GPa`:'unreported'}<br>Spall: ${Number.isFinite(r.spallUncertainty)?`±${fmt(r.spallUncertainty)} GPa`:'unreported'}</p><p>${esc(r.uncertaintyDefinition||'Definition unreported')}</p></div>${r.notes?`<div class="detail-section"><h3>Record notes</h3><p>${esc(r.notes)}</p></div>`:''}`;
 }
 
 function initSources(){

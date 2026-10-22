@@ -6,4 +6,4 @@ Interactive spall strength versus Hugoniot elastic limit, with linked literature
 
 This repository contains the generated literature-only website. Updates are built automatically from the research compilation. Current-study measurements and private configuration are excluded.
 
-Download the complete literature ledger from `data/literature.csv`, or the machine-readable map from `data/catalogue.json`.
+Download the complete literature ledger from `data/literature.csv`, or the machine-readable map from `data/catalogue.json`. Opt-in connected experiments are a separate layer in `data/connected-experiments.json`; their records are never counted as literature.
