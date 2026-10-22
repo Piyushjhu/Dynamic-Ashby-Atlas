@@ -109,6 +109,30 @@ separate from measured input extents. No covariance, measurement, pairing or
 additional completion is inferred from the shape. Cu–Ti is excluded, and
 unsupported records remain unresolved. See `README_LITERATURE_CLOUDS.md`.
 
+## Static and dynamic cloud comparison
+
+The property-analysis comparison is cloud-first and uses independently admitted
+static and dynamic populations. A static source does not require a dynamic
+counterpart. For named-material static clouds, independent measured yield and
+toughness extents may be pooled across papers or states only under the same
+exact composition identity. Reviewed `cloud_material` overrides identify known
+treatment/orientation pools; other exact source material labels remain unchanged.
+Keep the full source material, condition and locator on every supporting value.
+
+The optional class-coverage layer pools separate axis extents across exact
+materials in a class. Its bounding-box corners can combine different alloys or
+states and are not measurements. Split tensile/compressive yield and notched,
+conditional KQ, elastic-plastic equivalent K and indentation toughness. Do not
+substitute flexural failure strength, hardness or Charpy energy on classical
+yield/K axes. Independently missing properties remain missing at record level.
+
+Use the same closed log-space schematic enclosure and explicit drawing-width
+flags as the dynamic literature clouds. Export actual bounds, unique support
+counts and source lists. Never enumerate marginal Cartesian products as paired
+observations or fit covariance to them. The optional measured-pair view retains
+strict source/experiment/material/state joins; embeddings retain their complete-
+case admission rules. See `README_PROPERTY_ANALYSIS.md` for outputs and rebuilds.
+
 ## Local data import
 
 Inspect result CSV headers and the parameter/material files. Identify what each row means: a shot result, sample summary, repeated postprocessing output or stale test output. Compare timestamps/configuration and choose one authoritative result for each shot. Match HEL/spall by shot ID and target material, preserving validity flags and uncertainties.

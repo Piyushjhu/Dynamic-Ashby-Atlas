@@ -27,10 +27,48 @@ For newly reviewed XML tables, update `scripts/zaki_reviewed.py`, run
 commands above. The CSV and reviewed-source metadata are sufficient for
 normal builds and GitHub Actions; the full-text XML corpus stays local.
 
-## What can be compared
+## Cloud comparison
+
+The comparison opens with clouds. Static and dynamic populations are independent:
+a material does not need a dynamic measurement to enter the static plot, or a
+static counterpart to enter the dynamic plot. The static view uses the full
+reviewed static corpus, rather than selecting only materials with HEL/spall data.
+
+**Material clouds** enclose the independently reported yield and toughness bounds
+of an exact named material. Explicit reviewed `cloud_material` identities can pool
+heat treatments, orientations or processing conditions; full source material/state
+labels stay in the supporting records. Different compositions are not pooled by
+stripping text from alloy-series labels. Properties can come from separate papers
+or tests. These supports do not become artificial paired observations.
+
+**Class coverage** uses all eligible yield and toughness values in a class,
+including materials with only one of these properties. Its independent bounds
+may combine different alloys and conditions. This is a view of literature
+coverage; a corner of that region need not correspond to any measured material.
+Exact materials and source links remain available in the selected cloud.
+
+Tensile/compressive yield and notched, provisional KQ, elastic-plastic equivalent K
+and indentation toughness remain separate cloud groups. Material-cloud opacity
+increases with unique supporting property-record count. Class fills have constant
+opacity. Counts are original supports, never the product of marginal counts.
+One support used in multiple method groups is counted once in overall totals.
+
+Both views use closed log-space ellipses enclosing independent min/max bounds.
+They show coverage, not measured covariance, probability density, confidence
+intervals or intrinsic physical limits. A minimum full drawing span of 0.075
+decades is flagged separately; raw bounds remain unchanged. Single-property
+materials that cannot enter the material-cloud view stay in the marginal plots
+and missing-property list. The dynamic clouds use the existing literature-map
+completion rules with donor/model provenance and inferred status retained.
+
+Click a website cloud to inspect its separate axis supports, conditions, methods,
+source locators and publication links. Select **Measured condition pairs** for
+the stricter paired-data comparison.
+
+## What can be compared as measured pairs
 
 The classical axes are tensile yield strength in MPa and fracture toughness
-in MPa√m. Static pairs require both properties in the same source-defined
+in MPa√m. In the optional measured-pair view, static pairs require both properties in the same source-defined
 material condition. They can summarize different test specimens from that
 condition; they are not advertised as a single test. Heat treatments,
 orientations and processing states remain distinct.
@@ -49,6 +87,20 @@ comparison is a comparison of coverage, loading regimes and reported material
 states. It does not establish a transformation between fracture toughness and
 spall. No empirical static–dynamic conversion is fitted without matched
 materials and conditions.
+
+The figures are saved in `outputs/literature_only/`, as PNG and editable PDF:
+
+- `literature_static_dynamic_comparison`: independent named-material clouds on the classical and dynamic axes.
+- `literature_static_dynamic_class_coverage`: broader independent class extents.
+- `literature_static_material_clouds`: a larger static map with exact-material IDs and linked author/year references.
+- `literature_static_material_clouds_by_class`: named-material clouds separated by static material class.
+- `literature_static_dynamic_pairs`: the strict measured-condition-pair comparison.
+- `literature_static_supporting_properties`: flexural-strength/toughness and yield/Charpy panels with their actual units.
+
+The `audit/properties/literature_property_clouds.csv` export records actual bounds,
+supporting values, exact materials and source links. The website's downloadable
+experimental-property CSV contains all reviewed values, including single-property
+static records.
 
 ## Completing earlier gaps
 
