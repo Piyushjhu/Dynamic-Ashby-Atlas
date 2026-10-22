@@ -19,8 +19,8 @@ The first command imports reviewed XML and publisher/author full-text property
 ledgers, dynamic observations and source metadata.
 It is idempotent: rerunning it preserves record identities and does not append
 the same measurements again. Static properties remain in the long-form ZAKI
-input. The figure workflow also regenerates the property comparison and
-embedding figures in `outputs/literature_only/`. Detailed numerical outputs
+input. The figure workflow also regenerates the property comparison, class-ranking
+and embedding figures in `outputs/literature_only/`. Detailed numerical outputs
 are in that folder's `audit/` subfolder. The generated site is in `_site/`.
 
 For newly reviewed XML tables, update `scripts/zaki_reviewed.py`, run
@@ -111,6 +111,86 @@ The `audit/properties/literature_property_clouds.csv` export records actual boun
 supporting values, exact materials and source links. The website's downloadable
 experimental-property CSV contains all reviewed values, including single-property
 static records.
+
+## Comparing class rankings
+
+The [class-ranking analysis](https://piyushjhu.github.io/Dynamic-Ashby-Atlas/static-dynamic.html#ranking-section)
+asks whether the represented material classes have similar orderings on the
+static and dynamic axes. Separate **Bradley–Terry models**, a form of regularized
+logistic machine learning, summarize probabilistic class preferences in each
+regime. The models do not regress physical property values, convert static
+properties into dynamic ones or learn from cloud geometry.
+
+The static inputs are reviewed positive measured yield and K-type toughness
+scalars. The dynamic inputs are original positive experimental HEL and spall
+scalars with primary full-text review. Estimated HEL, donor coordinates,
+compilation summaries, range-only values, alternative reductions and zero spall
+stay outside model fitting. A missing axis remains missing. The main analysis
+uses independent property marginals: a class can have different named materials
+and papers supporting each axis, without manufacturing paired observations.
+Separate measured-condition-pair scenarios check the narrower paired population;
+these conditions are still not matched between static and dynamic regimes.
+
+Within each class and property, every publication has equal total weight and its
+records share that weight. Each class comparison estimates the probability that
+a value from class A exceeds a value from class B, splitting exact ties equally.
+Every unordered class pair then contributes one soft target to the model,
+regardless of its number of record combinations. A fixed L2 penalty of 0.05
+keeps fitted scores finite, including complete separation; it is not selected
+using held-out results.
+
+Five objective settings give strength a weight of **0, 0.25, 0.5, 0.75 or 1**;
+fracture/failure resistance receives the remaining weight. Strength means yield
+in the static map and HEL in the dynamic map; resistance means K-type toughness
+and spall, respectively. Both axes are preferred higher. A model probability
+approximates this weighted, randomly selected-axis preference. It is not the
+probability that a material exceeds another on both axes, or a universal measure
+of material quality. Changing units does not change within-property ordering.
+
+The primary scenario uses tensile yield and reported notched toughness. Separate
+scenarios retain provisional KQ, a deliberately mixed K-family sensitivity,
+measured condition pairs and compressive yield. J-integral values, tensile
+strength and Charpy energy do not substitute for K or yield. A class needs both
+admitted axes in both regimes to enter a comparison; exclusions are listed.
+
+Whole publications are resampled jointly across the two maps, preserving shared
+source identities. The resulting bands describe **source-resampling stability**
+of this literature population, not confidence guarantees for physical ranks.
+Replicates missing a required class axis are omitted without imputation, and
+bands require enough complete replicates. Bands for a class with any single-paper
+axis are withheld because its between-paper variation cannot be estimated.
+Record cross-products and bootstrap replicates do not increase measurement counts.
+
+The held-out diagnostic leaves one dynamic paper out of **both** regimes before
+fitting. Only classes retaining both axes in both training populations are
+scored. It compares static-order transfer, a dynamic model trained on the
+remaining papers and an ordering-neutral probability of 0.5. Expected Bernoulli
+Brier and log losses include outcome dispersion; the neutral baselines are
+**0.25** and **ln(2)**. Scores are averaged by directed class pair and axis.
+These are correlated marginal-comparison diagnostics, not independent test
+trials or evidence of out-of-class property prediction. Coverage is reported
+because removing a paper can make a class unidentifiable.
+
+The current primary notched-K, equal-weight comparison places **Steels above
+Light alloys in both regimes**. With only two comparable classes, a broad rank
+correlation claim is not supported. Broader provisional-KQ and mixed-K scenarios
+can suggest ordering changes, but their method families, alloys, processing
+states and source populations differ. A stable resampling result does not remove
+those confounders. Common alloy names do not establish matched chemistry, state,
+loading or specimens; a material-level transfer model is withheld until adequate
+matched coverage exists. Temperature and loading-rate metadata are incomplete,
+so these analyses cannot isolate their causal effects.
+
+Both rebuild commands, `python plot_literature_clouds.py` and
+`python scripts/build_website.py`, refresh the ranking analysis automatically:
+
+- `outputs/literature_only/literature_static_dynamic_rankings.png` and `.pdf`: class orderings and supported stability bands.
+- `outputs/literature_only/audit/rankings/literature_rankings.json`: scenarios, objective settings, class/pair preferences, source supports and diagnostics; the companion `.csv` summarizes class results.
+- `ZAKI/reports/static_dynamic_rankings.md`: readable findings, coverage and limitations.
+- `_site/data/rankings.json`: the public download used by `static-dynamic.html#ranking-section`.
+
+The numerical audit files and report regenerate from the reviewed inputs, so new
+papers can change eligibility, source balance, fitted preferences and findings.
 
 ## Completing earlier gaps
 
