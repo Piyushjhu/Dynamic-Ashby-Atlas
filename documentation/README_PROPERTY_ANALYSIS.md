@@ -10,12 +10,13 @@ Private study measurements are excluded.
 From the project root, with the project virtual environment active:
 
 ```sh
-python scripts/integrate_zaki.py
+python scripts/integrate_valency.py
 python plot_literature_clouds.py
 python scripts/build_website.py
 ```
 
-The first command imports reviewed dynamic observations and source metadata.
+The first command imports reviewed XML and publisher/author full-text property
+ledgers, dynamic observations and source metadata.
 It is idempotent: rerunning it preserves record identities and does not append
 the same measurements again. Static properties remain in the long-form ZAKI
 input. The figure workflow also regenerates the property comparison and
@@ -26,6 +27,15 @@ For newly reviewed XML tables, update `scripts/zaki_reviewed.py`, run
 `python scripts/audit_zaki.py` while the external SSD is mounted, then run the
 commands above. The CSV and reviewed-source metadata are sufficient for
 normal builds and GitHub Actions; the full-text XML corpus stays local.
+
+Valency-assisted discovery follows the [primary-source review rules](https://piyushjhu.github.io/Dynamic-Ashby-Atlas/methods.html#evidence).
+The reviewed expansion adds 172 static/ambient values and 32 single-property
+dynamic records from eight new papers. Its report and checked-in
+`accepted_properties.json` and `accepted_dynamic.json` are in
+`research/2026-10-22_valency_expansion/`. The ledgers
+contain reviewed source cells and provenance; search output alone cannot admit
+a value. Publisher-reviewed rows retain a source digest, public full-text URL
+and their own review status, without claiming an original-corpus XML identity.
 
 ## Cloud comparison
 
@@ -140,12 +150,19 @@ and the [UMAP reproducibility documentation](https://umap-learn.readthedocs.io/e
 
 ## Review status and publication
 
-ZAKI source cells and experimental methods were reviewed in full-text XML.
+ZAKI source cells and experimental methods were reviewed in full-text XML or
+publisher/author full text, with those review bases recorded separately.
 Same-shot identity can be known while visual PDF verification remains pending.
 These observations are included with their XML review status; the original
 visually verified pair layer keeps its stricter admission rule. Alternative
 reductions remain linked to the original experiment and excluded as extra
 independent observations.
+
+The new PEEK source reports K-type fracture toughness but no yield values; its
+tensile-strength maxima are not substituted for yield. The Inconel 718 source
+reports experimental J estimates; its elastic K component is not total KIc,
+and J is not converted using assumed elastic constants. Source-reported ± terms
+remain undefined when the paper does not identify their statistical meaning.
 
 The public property download uses an explicit field list: values, units,
 material/state, experimental definitions, uncertainties and source locators.
