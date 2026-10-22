@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive, source-linked literature atlas of spall strength and Hugoniot elastic limit. Explore exact materials, inspect the evidence, and follow every value back to its paper.">
+  <meta name="theme-color" content="#f5f5f7">
+  <title>Keep the map growing — Dynamic Ashby</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script type="module" src="assets/app.js"></script>
+</head>
+<body data-page="contribute">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="index.html" aria-label="Dynamic Ashby home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 4v23h24M9 22l5-8 5 3 8-11"/><ellipse cx="17" cy="15" rx="10" ry="5" transform="rotate(-30 17 15)"/></svg>Dynamic Ashby<span class="brand-tag">LITERATURE ATLAS</span></a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="main-nav">Menu <span>+</span></button>
+      <nav id="main-nav" aria-label="Main navigation"><a href="index.html">Overview</a><a href="explore.html">Explore</a><a href="sources.html">Sources</a><a href="workflow.html">Workflow</a><a href="methods.html">Methods</a><a href="contribute.html" aria-current="page">Add data</a></nav>
+    </div>
+  </header>
+  <main id="main"><section class="page-intro page-width"><p class="eyebrow">A living compilation</p><h1>The next paper<br><span>belongs in the same workflow.</span></h1><p>Add reviewed evidence once. Let the map, source library and downloads update together on the next repository build.</p><a class="button primary" href="https://github.com/Piyushjhu/Dynamic-Ashby-Atlas" target="_blank" rel="noopener noreferrer">Open the repository ↗</a></section>
+<section class="page-width contribute-grid"><div class="prose"><h2>Three files to know.</h2><div class="file-guide"><code>sources.json</code><p>The publication registry. Add a unique source ID, exact citation, title, year, DOI, link, classes and extraction status.</p></div><div class="file-guide"><code>literature_values.json</code><p>The evidence ledger. Add unique record IDs, the source ID, exact material and state, reported properties, units, conditions and extraction locators.</p></div><div class="file-guide"><code>literature_clouds_config.json</code><p>Class order, distinct class colours, material colour families and rendering settings. Extend this when adding a new material class.</p></div><p>Optional donor matches and yield-to-HEL inputs belong in <code>exploratory_ashby_config.json</code>. Do not enter inferred coordinates as reported measurements. The generated CSV and website data are outputs.</p></div><aside class="contribute-aside"><p class="eyebrow">Before the record becomes a cloud</p><ol class="plain-checks"><li>Open the original paper and verify the values.</li><li>Record the exact material and specimen state.</li><li>Preserve units, limits and uncertainty definitions.</li><li>Confirm whether the properties belong to the same shot.</li><li>Attach a stable publication link and an extraction locator.</li><li>Leave an unsupported counterpart missing.</li></ol></aside></section>
+<section class="page-width editorial-section"><p class="eyebrow">Run locally</p><h2>Build. Preview. Review.</h2><p class="section-description">With the project’s Python environment active, run these commands from the repository root.</p><div class="command-block"><span>Refresh scientific figures and the common literature export</span><pre><code>python plot_literature_clouds.py</code></pre><span>Build the website and serve it locally</span><pre><code>python scripts/build_website.py
+python -m http.server 8000 --directory _site</code></pre><small>Then open <a href="http://localhost:8000">http://localhost:8000</a>. Serve the generated folder; opening an HTML file directly will not load its data.</small></div><p>The builder reads the canonical JSON inputs, calls the shared scientific functions, and writes a deployable static website into <code>_site/</code>. No JavaScript package installation or external chart service is needed.</p></section>
+<section class="feature-section"><div class="page-width split-intro"><div><p class="eyebrow">Automatic updates</p><h2>A commit becomes<br>a fresh compilation.</h2></div><div class="prose"><p>GitHub Actions checks the repository, builds the website and saves a downloadable site artifact. With GitHub Pages configured, successful main-branch builds also deploy the website.</p><p>New sources, evidence records, classes, clouds and coverage counts are generated from the inputs. Publication-only additions appear in the library immediately; they enter the map after supported numerical evidence is extracted.</p><p>The website build always excludes private current-study data and local configuration overrides.</p></div></div></section>
+</main>
+  <footer class="site-footer">
+    <div><a class="footer-brand" href="index.html">Dynamic Ashby</a><p>Materials under shock. Evidence in the open.</p></div>
+    <div class="footer-links"><a href="methods.html">How to read the map</a><a href="data/literature.csv" download>Download CSV ↗</a><a href="https://github.com/Piyushjhu/Dynamic-Ashby-Atlas" target="_blank" rel="noopener noreferrer">Repository ↗</a></div>
+    <p class="build-note" data-build-note>Loading the literature compilation…</p>
+  </footer>
+  <div id="toast" class="toast" role="status"></div>
+</body>
+</html>
