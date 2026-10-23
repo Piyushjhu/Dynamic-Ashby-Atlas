@@ -97,6 +97,7 @@ export function initConnections(payload){
         $('#connection-github-secret').hidden=!repository||config.auth.mode==='none';
         $('#connection-output').hidden=false;message.textContent='Configuration generated locally. Nothing has been connected or published yet.';message.dataset.kind='success';
         $('#connection-output').scrollIntoView({behavior:'smooth',block:'nearest'});
+        document.dispatchEvent(new CustomEvent('ashby-connection-config-ready',{detail:config}));
       }catch(error){message.textContent=error.message||'Review the configuration fields.';message.dataset.kind='error';}
     });
   }
