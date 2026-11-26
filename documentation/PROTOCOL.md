@@ -17,6 +17,14 @@ Record each author's formula, wave speed and waveform correction before pooling 
 
 Both source verification and pairing level matter. A precisely printed abstract value can still have unresolved pairing.
 
+Publication identity is separate from experiment identity. When a paper reuses
+an earlier control, retain a duplicate-experiment provenance link and count the
+physical observation once. Reviewed additions may assign an explicit
+`experiment_id`; active rows cannot share one. The November 2026 expansion keeps
+the five cast Inconel 718 controls repeated in S95 under S02, while admitting
+only the distinct DLD experiments from S95. Source-only discovery candidates
+remain in the review queue and supply no plot coordinates.
+
 Where a visually verified experimental table has no author shot code, an assigned
 source-table row tag may identify that actual experiment. Record its assigned
 origin explicitly; a table of independent material summaries does not qualify.
