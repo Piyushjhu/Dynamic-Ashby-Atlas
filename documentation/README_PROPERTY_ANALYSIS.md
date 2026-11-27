@@ -37,7 +37,7 @@ Supplementary Table 1. Reported ± terms are standard deviations. K_JIc is an
 experimentally reduced J-equivalent crack-initiation toughness, not a separately
 measured linear-elastic K_Ic or a crack-growth value. The November 2026 expansion adds 24 Table 2 scalars from Gaarud et al. (2024): four measured 0.2% yield strengths and 20 KQ values. Four room-temperature condition points enter the strict map; 16 additional toughness-only conditions stay in the marginal view. Estimated 77 K yield, italicized tensile-failure stresses and conflicting PC yield values are excluded from yield inputs. Separate tensile/SENB populations are retained.
 
-The measured map now contains **54 condition points and 25 material clouds**, using **204 yield and 137 K-type toughness values**. Four Ti/TiB condition links span separate original tables and retain their original cell/experiment IDs. KQ qualifications remain visible. Other candidates remain in the held review queue; see the [bounded recent-literature review](research/2026-11-26_static_expansion/README.md).
+The measured map now contains **55 condition points and 26 material clouds**, using **205 yield and 140 K-type toughness values**. Four Ti/TiB condition links span separate original tables and retain their original cell/experiment IDs. KQ qualifications remain visible. Other candidates remain in the held review queue; see the [bounded recent-literature review](research/2026-11-26_static_expansion/README.md).
 
 Reference ranges never enter measured record/source totals, class-ranking fits,
 source resampling, UMAP/diffusion features or HEL estimation. Only separately
@@ -49,6 +49,8 @@ used in the broad reference layer.
 
 Sources: [Ashby (2021), official Ansys/Granta tables](https://ansys.synopsys.com/content/dam/amp/2021/august/webpage-requests/education-resources-dam-upload-batch-2/material-property-data-for-eng-materials-BOKENGEN21.pdf),
 [George, Raabe & Ritchie (2019)](https://doi.org/10.1038/s41578-019-0121-4).
+
+The Gludovatz et al. (2014) CrMnFeCoNi follow-up admits four literal primary results values: tensile yield 759 MPa and initiation K_JIc 219 MPa√m at 77 K, plus K_JIc 217 and 221 MPa√m at 293 and 200 K. These have distinct `publisher_prose_and_method_reviewed` status and actual paragraph/page identities; no table cells are invented. Only the 77 K condition is paired across the reviewed tensile/fracture passages. The unavailable Supplementary Table S1 leaves the other two yield strengths and numerical uncertainties unresolved. See the [source review](research/2026-11-26_static_expansion/gludovatz2014_review.md).
 
 The public chart library links **11 published map/reference sources**, ten from 2020–2026. It separates yield–K, broader strength–K and simulation evidence through explicit axis/role definitions. A review chart or a new redraw does not add independent measurements. The 2025 Hedvard–Eichler–Weißgraeber screening paper is particularly relevant to a design-tool argument; the 2026 Cantor figure is explicitly a redraw of earlier work.
 
@@ -131,7 +133,7 @@ condition; they are not advertised as a single test. Heat treatments,
 orientations and processing states remain distinct.
 
 `data/static_literature/condition_joins.json` records explicitly reviewed
-cross-table condition links. These supplement the original source-table
+cross-table or primary-prose condition links. These supplement the original source-table
 experiment groups without changing individual scalar or experiment IDs. Each
 link identifies its actual supports, common source/material condition, review
 level and source fingerprint. It cannot join different sources, compositions or

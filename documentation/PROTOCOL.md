@@ -163,7 +163,25 @@ sample artificial points inside a range. Reference ranges are excluded from
 experimental/source counts, ML rankings, source resampling, embeddings and
 HEL estimates. Malformed source bounds are held rather than silently repaired.
 Primary experimental values found during the chart review require the same
-full-text table-and-method admission used by other measured property ledgers.
+full-text numerical-source and method review used by other measured property ledgers.
+
+### Literal primary results prose
+
+An explicitly printed experimental value in a primary article's results text
+may enter the static property ledger with the distinct review status
+`publisher_prose_and_method_reviewed`. Preserve its actual paragraph, page,
+annotation identity, source document digest and a checked extraction image.
+Use prose-specific record/experiment identities; leave table/XML coordinates
+empty. The source must identify the measured property, material condition and
+units. This path does not admit secondary review values, abstract-only claims,
+digitized curves, inferred values or reconstructed values from percentage changes.
+
+Reported precision, initiation/growth distinctions and experimental reductions
+remain explicit. Missing numerical uncertainty stays null even if the source
+states that error bars elsewhere represent standard deviations. A separately
+reviewed condition join may link tensile and fracture results from different
+paragraphs of the same primary study; it does not establish a shared specimen
+or create missing properties. Preserve measured-table admission unchanged.
 
 ## Local data import
 
