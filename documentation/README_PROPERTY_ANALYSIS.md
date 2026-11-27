@@ -1,9 +1,12 @@
 # Static and dynamic property analysis
 
-The literature website includes **Static vs dynamic** and **Embeddings** pages.
-Their data come from the reviewed experimental input in `ZAKI/ZAKI.csv` and
-the original reported dynamic evidence in `literature_values.json`.
-Private study measurements are excluded.
+The literature website presents property maps, source values and coverage. It
+includes a **Static vs dynamic** comparison and optional **Embeddings** views.
+Their data come from the reviewed experimental input in `ZAKI/ZAKI.csv` and the original
+reported dynamic evidence in `literature_values.json`. Private study measurements
+are excluded. Class-ranking methods and recorded results are retained below as
+offline exploratory research; the website has no ranking interface or public
+ranking-data export.
 
 ## Broad static literature context
 
@@ -39,7 +42,7 @@ measured linear-elastic K_Ic or a crack-growth value. The November 2026 expansio
 
 The measured map now contains **55 condition points and 26 material clouds**, using **205 yield and 140 K-type toughness values**. Four Ti/TiB condition links span separate original tables and retain their original cell/experiment IDs. KQ qualifications remain visible. Other candidates remain in the held review queue; see the [bounded recent-literature review](research/2026-11-26_static_expansion/README.md).
 
-Reference ranges never enter measured record/source totals, class-ranking fits,
+Reference ranges never enter measured record/source totals, offline class-ranking fits,
 source resampling, UMAP/diffusion features or HEL estimation. Only separately
 reviewed experimental scalars can augment those inputs. The 2021 table's
 descending stainless-steel yield range is held; no silent repair is made.
@@ -68,9 +71,12 @@ The first command imports reviewed XML and publisher/author full-text property
 ledgers, dynamic observations and source metadata.
 It is idempotent: rerunning it preserves record identities and does not append
 the same measurements again. Static properties remain in the long-form ZAKI
-input. The figure workflow also regenerates the property comparison, class-ranking
-and embedding figures in `outputs/literature_only/`. Detailed numerical outputs
-are in that folder's `audit/` subfolder. The generated site is in `_site/`.
+input. `python plot_literature_clouds.py` regenerates the property comparison and
+embedding figures, along with the retained offline class-ranking figures and
+reports, in `outputs/literature_only/`. Detailed numerical outputs are in that
+folder's `audit/` subfolder. `python scripts/build_website.py` builds the property
+maps, source views, coverage and optional embeddings in `_site/`; it does not
+compute or export rankings.
 
 For newly reviewed XML tables, update `scripts/zaki_reviewed.py`, run
 `python scripts/audit_zaki.py` while the external SSD is mounted, then run the
@@ -172,11 +178,14 @@ supporting values, exact materials and source links. The website's downloadable
 experimental-property CSV contains all reviewed values, including single-property
 static records.
 
-## Comparing class rankings
+## Offline exploratory class rankings
 
-The [class-ranking analysis](https://piyushjhu.github.io/Dynamic-Ashby-Atlas/static-dynamic.html#ranking-section)
-asks whether the represented material classes have similar orderings on the
-static and dynamic axes. Separate **Bradley–Terry models**, a form of regularized
+This section preserves the ranking methods and recorded results for the research
+record and reproducibility. These analyses run through the offline figure
+workflow and are not part of the website.
+
+The offline analysis asks whether the represented material classes have similar
+orderings on the static and dynamic axes. Separate **Bradley–Terry models**, a form of regularized
 logistic machine learning, summarize probabilistic class preferences in each
 regime. The models do not regress physical property values, convert static
 properties into dynamic ones or learn from cloud geometry.
@@ -231,7 +240,7 @@ These are correlated marginal-comparison diagnostics, not independent test
 trials or evidence of out-of-class property prediction. Coverage is reported
 because removing a paper can make a class unidentifiable.
 
-The current primary notched-K, equal-weight comparison places **Steels above
+The recorded primary notched-K, equal-weight comparison places **Steels above
 Light alloys in both regimes**. With only two comparable classes, a broad rank
 correlation claim is not supported. Broader provisional-KQ and mixed-K scenarios
 can suggest ordering changes, but their method families, alloys, processing
@@ -241,16 +250,15 @@ loading or specimens; a material-level transfer model is withheld until adequate
 matched coverage exists. Temperature and loading-rate metadata are incomplete,
 so these analyses cannot isolate their causal effects.
 
-Both rebuild commands, `python plot_literature_clouds.py` and
-`python scripts/build_website.py`, refresh the ranking analysis automatically:
+Run `python plot_literature_clouds.py` to regenerate the offline ranking analysis:
 
 - `outputs/literature_only/literature_static_dynamic_rankings.png` and `.pdf`: class orderings and supported stability bands.
 - `outputs/literature_only/audit/rankings/literature_rankings.json`: scenarios, objective settings, class/pair preferences, source supports and diagnostics; the companion `.csv` summarizes class results.
 - `ZAKI/reports/static_dynamic_rankings.md`: readable findings, coverage and limitations.
-- `_site/data/rankings.json`: the public download used by `static-dynamic.html#ranking-section`.
 
 The numerical audit files and report regenerate from the reviewed inputs, so new
 papers can change eligibility, source balance, fitted preferences and findings.
+The website builder neither computes these rankings nor publishes their data.
 
 ## Completing earlier gaps
 
