@@ -138,7 +138,11 @@ Use the same closed log-space schematic enclosure and explicit drawing-width
 flags as the dynamic literature clouds. Export actual bounds, unique support
 counts and source lists. Never enumerate marginal Cartesian products as paired
 observations or fit covariance to them. The optional measured-pair view retains
-strict source/experiment/material/state joins; embeddings retain their complete-
+strict source/experiment/material/state joins. Explicit reviewed cross-table
+condition joins may additionally connect separate tensile/fracture test
+populations within one source and material condition. They retain both original
+table-cell/experiment identities, do not add scalar values, and do not imply
+the same specimen. Unknown conditions do not establish a match. Embeddings retain their complete-
 case admission rules. See `README_PROPERTY_ANALYSIS.md` for outputs and rebuilds.
 
 ## Published static reference context

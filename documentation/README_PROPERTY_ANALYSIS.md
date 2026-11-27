@@ -7,7 +7,7 @@ Private study measurements are excluded.
 
 ## Broad static literature context
 
-The default **Static vs dynamic** page now overlays **43 published family
+The default **Static vs dynamic** page now overlays **49 published family
 ranges** with the reviewed experimental static clouds. These ranges come from
 Mike Ashby's *Material property data for engineering materials*, 5th edition
 (2021), Tables A3–A4. The review also checks the example in George, Raabe and
@@ -16,7 +16,7 @@ The static map is therefore not restricted to materials in the original ZAKI
 corpus or to materials with dynamic counterparts.
 
 The broad horizontal axis is **Strength**, because the references use metal
-yield, polymer yield/nonlinearity, and ceramic/glass tensile fracture strength.
+yield, polymer yield/nonlinearity, and ceramic/glass/natural-material/composite tensile failure strength.
 Each range retains its exact definition, bounds, table/page/row locator and
 source link. Select **Reviewed measurements** to restore the strict yield–K
 views. Published ranges are independent marginal bounds; rounded cloud
@@ -35,8 +35,9 @@ The initial primary addition admits six scalar properties forming three CrCoNi
 yield–K_JIc condition pairs (293, 198 and 77 K) from Gludovatz et al. (2016),
 Supplementary Table 1. Reported ± terms are standard deviations. K_JIc is an
 experimentally reduced J-equivalent crack-initiation toughness, not a separately
-measured linear-elastic K_Ic or a crack-growth value. Other candidates remain
-in the held review queue.
+measured linear-elastic K_Ic or a crack-growth value. The November 2026 expansion adds 24 Table 2 scalars from Gaarud et al. (2024): four measured 0.2% yield strengths and 20 KQ values. Four room-temperature condition points enter the strict map; 16 additional toughness-only conditions stay in the marginal view. Estimated 77 K yield, italicized tensile-failure stresses and conflicting PC yield values are excluded from yield inputs. Separate tensile/SENB populations are retained.
+
+The measured map now contains **54 condition points and 25 material clouds**, using **204 yield and 137 K-type toughness values**. Four Ti/TiB condition links span separate original tables and retain their original cell/experiment IDs. KQ qualifications remain visible. Other candidates remain in the held review queue; see the [bounded recent-literature review](research/2026-11-26_static_expansion/README.md).
 
 Reference ranges never enter measured record/source totals, class-ranking fits,
 source resampling, UMAP/diffusion features or HEL estimation. Only separately
@@ -48,6 +49,8 @@ used in the broad reference layer.
 
 Sources: [Ashby (2021), official Ansys/Granta tables](https://ansys.synopsys.com/content/dam/amp/2021/august/webpage-requests/education-resources-dam-upload-batch-2/material-property-data-for-eng-materials-BOKENGEN21.pdf),
 [George, Raabe & Ritchie (2019)](https://doi.org/10.1038/s41578-019-0121-4).
+
+The public chart library links **11 published map/reference sources**, ten from 2020–2026. It separates yield–K, broader strength–K and simulation evidence through explicit axis/role definitions. A review chart or a new redraw does not add independent measurements. The 2025 Hedvard–Eichler–Weißgraeber screening paper is particularly relevant to a design-tool argument; the 2026 Cantor figure is explicitly a redraw of earlier work.
 
 ## Rebuild
 
@@ -126,6 +129,16 @@ in MPa√m. In the optional measured-pair view, static pairs require both proper
 material condition. They can summarize different test specimens from that
 condition; they are not advertised as a single test. Heat treatments,
 orientations and processing states remain distinct.
+
+`data/static_literature/condition_joins.json` records explicitly reviewed
+cross-table condition links. These supplement the original source-table
+experiment groups without changing individual scalar or experiment IDs. Each
+link identifies its actual supports, common source/material condition, review
+level and source fingerprint. It cannot join different sources, compositions or
+known temperatures, promote a conditional KQ value to KIc, or create a shared
+specimen. The source-linked chart library is separately maintained in
+`data/static_literature/chart_library.json`; a published or redrawn map adds no
+measurements unless its original numerical evidence is admitted separately.
 
 The expanded seed includes AISI 4340 heat-treatment conditions and
 Ti–10V–2Fe–3Al LT/TL conditions with reported plane-strain toughness. Copper
