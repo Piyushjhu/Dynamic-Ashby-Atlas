@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="An interactive, source-linked literature atlas of spall strength and Hugoniot elastic limit. Explore exact materials, inspect the evidence, and follow every value back to its paper.">
+  <meta name="description" content="Literature maps of Hugoniot elastic limit and spall strength, with material conditions, experimental methods and source references.">
   <meta name="theme-color" content="#f5f5f7">
-  <title>Explore the map — Dynamic Ashby</title>
+  <title>Dynamic material map — Dynamic Ashby</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/styles.css">
   <script type="module" src="assets/app.js"></script>
@@ -18,10 +18,10 @@
     <div class="nav-shell">
       <a class="brand" href="index.html" aria-label="Dynamic Ashby home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 4v23h24M9 22l5-8 5 3 8-11"/><ellipse cx="17" cy="15" rx="10" ry="5" transform="rotate(-30 17 15)"/></svg>Dynamic Ashby<span class="brand-tag">LITERATURE ATLAS</span></a>
       <button class="menu-button" type="button" aria-expanded="false" aria-controls="main-nav">Menu <span>+</span></button>
-      <nav id="main-nav" aria-label="Main navigation"><a href="index.html">Overview</a><a href="explore.html" aria-current="page">Explore</a><a href="static-dynamic.html">Static vs dynamic</a><a href="embeddings.html">Embeddings</a><a href="sources.html">Sources</a><a href="workflow.html">Workflow</a><a href="methods.html">Methods</a><a href="contribute.html">Add data</a></nav>
+      <nav id="main-nav" aria-label="Main navigation"><a href="index.html">Overview</a><a href="explore.html" aria-current="page">Explore</a><a href="static-dynamic.html">Static vs dynamic</a><a href="embeddings.html">Data views</a><a href="sources.html">Sources</a><a href="workflow.html">Workflow</a><a href="methods.html">Methods</a><a href="contribute.html">Add data</a></nav>
     </div>
   </header>
-  <main id="main"><section class="page-intro page-width compact"><p class="eyebrow">The interactive atlas</p><h1>Find your material.</h1><p>Explore reviewed literature and connected experimental collections. Select a cloud or measurement to trace the underlying source.</p></section>
+  <main id="main"><section class="page-intro page-width compact"><p class="eyebrow">Dynamic material map</p><h1>Explore HEL and spall strength.</h1><p>Filter by material class or evidence type. Select a cloud or measurement to inspect its values, test conditions and sources.</p></section>
 <section class="explorer page-width" aria-label="Interactive material explorer">
   <div class="explorer-toolbar">
     <div class="segmented" role="group" aria-label="Plot view"><button type="button" data-view="clouds" aria-pressed="true">Material clouds</button><button type="button" data-view="pairs" aria-pressed="false">Verified pairs</button></div>
@@ -29,30 +29,30 @@
   </div>
   <div class="filter-bar">
     <label>Data layer<select id="data-layer"><option value="literature">Literature</option><option value="connected">Connected experiments</option><option value="both">Both</option></select></label>
-    <label class="search-field"><span class="sr-only">Search exact material or paper</span><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg><input id="plot-search" type="search" placeholder="Search material, author, record…" autocomplete="off"></label>
+    <label class="search-field"><span class="sr-only">Search materials and sources</span><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg><input id="plot-search" type="search" placeholder="Search material, author, record…" autocomplete="off"></label>
     <label>Class<select id="class-filter"><option value="">All material classes</option></select></label>
-    <label>Evidence<select id="evidence-filter"><option value="all">All supported evidence</option><option value="reported">Reported coordinates only</option><option value="inferred">Includes inferred coordinates</option></select></label>
+    <label>Evidence<select id="evidence-filter"><option value="all">Reported and inferred coordinates</option><option value="reported">Reported coordinates only</option><option value="inferred">Records with inferred coordinates</option></select></label>
     <button type="button" class="quiet-button" id="clear-filters">Clear filters</button>
   </div>
   <div id="connected-layer-note" class="connected-layer-note" role="status" hidden></div>
   <div class="explorer-body">
     <div class="map-panel">
-      <div class="map-topline"><p id="map-count" role="status">Loading the compilation…</p><label class="checkbox"><input id="show-labels" type="checkbox" checked> Material names</label></div>
+      <div class="map-topline"><p id="map-count" role="status">Loading records…</p><label class="checkbox"><input id="show-labels" type="checkbox" checked> Material names</label></div>
       <div class="map-frame"><div id="main-plot" class="main-plot"></div><div class="zoom-tools" aria-label="Plot navigation"><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="zoom-out" type="button" aria-label="Zoom out">−</button><button id="zoom-reset" type="button" aria-label="Reset zoom">↺</button></div></div>
-      <div class="plot-key"><span><i class="line-sample"></i> Reported</span><span><i class="line-sample matched"></i> Matched / substituted</span><span><i class="line-sample modeled"></i> Yield-based HEL</span><span class="plot-hint">Scroll to zoom · drag to pan</span></div>
+      <div class="plot-key"><span><i class="line-sample"></i> Reported</span><span><i class="line-sample matched"></i> Matched or substituted</span><span><i class="line-sample modeled"></i> HEL estimated from yield strength</span><span class="plot-hint">Scroll to zoom · drag to pan</span></div>
       <div id="class-legend" class="class-legend" aria-label="Filter by material class"></div>
-      <p class="map-footnote">Darker fill = more extracted records. Minimum drawing width may enlarge sparse clouds. Dashed and dotted outlines flag inference; a solid outline does not establish same-shot pairing. <a href="methods.html">Read the methods ↗</a></p>
+      <p class="map-footnote">Darker clouds contain more records. Sparse clouds may be widened for visibility. Dashed and dotted outlines mark inferred coordinates; a solid outline does not establish same-shot pairing. <a href="methods.html">Read the methods ↗</a></p>
     </div>
     <aside id="selection-panel" class="selection-panel" aria-label="Selected evidence" aria-live="polite"></aside>
   </div>
-  <div class="results-section"><div class="results-heading"><div><p class="eyebrow">An accessible way to explore</p><h2 id="result-title">Materials in view</h2></div><span id="result-count"></span></div><div id="material-results" class="material-results"></div></div>
+  <div class="results-section"><div class="results-heading"><div><p class="eyebrow">Filtered results</p><h2 id="result-title">Materials in view</h2></div><span id="result-count"></span></div><div id="material-results" class="material-results"></div></div>
 </section>
-<section class="page-width connection-status-section" id="connected-status-section"><div class="connection-section-heading"><div><p class="eyebrow">Evolving experimental collections</p><h2>Connected sources.</h2></div><a class="text-link" href="contribute.html#connect-source">Connect a collection →</a></div><div id="connection-status" class="connection-status" aria-live="polite">Loading source status…</div></section>
-<section class="coverage-section page-width"><div><p class="eyebrow">Account for all the evidence</p><h2>Literature outside the map.</h2><p>Missing counterparts stay unresolved. Zero spall cannot appear on a logarithmic axis, and reviewed exclusions stay in the ledger.</p></div><div id="coverage-ledger"></div></section>
+<section class="page-width connection-status-section" id="connected-status-section"><div class="connection-section-heading"><div><p class="eyebrow">Experimental collections</p><h2>Connected collections</h2></div><a class="text-link" href="contribute.html#connect-source">Connect a collection →</a></div><div id="connection-status" class="connection-status" aria-live="polite">Loading source status…</div></section>
+<section class="coverage-section page-width"><div><p class="eyebrow">Record coverage</p><h2>Evidence outside the map</h2><p>Records with a missing counterpart, zero spall or a reviewed exclusion remain in the dataset. They are not plotted as positive HEL–spall pairs. Zero cannot be shown on a logarithmic axis.</p></div><div id="coverage-ledger"></div></section>
 <div id="plot-tooltip" class="plot-tooltip" role="tooltip" hidden></div>
 </main>
   <footer class="site-footer">
-    <div><a class="footer-brand" href="index.html">Dynamic Ashby</a><p>Materials under shock. Evidence in the open.</p></div>
+    <div><a class="footer-brand" href="index.html">Dynamic Ashby</a><p>Published HEL and spall-strength data.</p></div>
     <div class="footer-links"><a href="methods.html">How to read the map</a><a href="data/literature.csv" download>Download CSV ↗</a><a href="admin.html">Admin sources</a><a href="https://github.com/Piyushjhu/Dynamic-Ashby-Atlas" target="_blank" rel="noopener noreferrer">Repository ↗</a></div>
     <p class="build-note" data-build-note>Loading the literature compilation…</p>
   </footer>

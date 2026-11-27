@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="An interactive, source-linked literature atlas of spall strength and Hugoniot elastic limit. Explore exact materials, inspect the evidence, and follow every value back to its paper.">
+  <meta name="description" content="Literature maps of Hugoniot elastic limit and spall strength, with material conditions, experimental methods and source references.">
   <meta name="theme-color" content="#f5f5f7">
-  <title>Dynamic Ashby — A map of materials under shock</title>
+  <title>HEL and spall-strength literature — Dynamic Ashby</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/styles.css">
   <script type="module" src="assets/app.js"></script>
@@ -18,36 +18,36 @@
     <div class="nav-shell">
       <a class="brand" href="index.html" aria-label="Dynamic Ashby home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 4v23h24M9 22l5-8 5 3 8-11"/><ellipse cx="17" cy="15" rx="10" ry="5" transform="rotate(-30 17 15)"/></svg>Dynamic Ashby<span class="brand-tag">LITERATURE ATLAS</span></a>
       <button class="menu-button" type="button" aria-expanded="false" aria-controls="main-nav">Menu <span>+</span></button>
-      <nav id="main-nav" aria-label="Main navigation"><a href="index.html" aria-current="page">Overview</a><a href="explore.html">Explore</a><a href="static-dynamic.html">Static vs dynamic</a><a href="embeddings.html">Embeddings</a><a href="sources.html">Sources</a><a href="workflow.html">Workflow</a><a href="methods.html">Methods</a><a href="contribute.html">Add data</a></nav>
+      <nav id="main-nav" aria-label="Main navigation"><a href="index.html" aria-current="page">Overview</a><a href="explore.html">Explore</a><a href="static-dynamic.html">Static vs dynamic</a><a href="embeddings.html">Data views</a><a href="sources.html">Sources</a><a href="workflow.html">Workflow</a><a href="methods.html">Methods</a><a href="contribute.html">Add data</a></nav>
     </div>
   </header>
   <main id="main"><section class="hero page-width">
-  <p class="eyebrow"><span class="live-dot"></span> A living map of dynamic material properties</p>
-  <h1>Small timescales.<br><span>Big material differences.</span></h1>
-  <p class="hero-description">Explore how materials resist shock-induced yielding and tensile failure. One interactive map. Every value connected to its evidence.</p>
-  <div class="hero-actions"><a class="button primary" href="explore.html">Explore the map <span>↗</span></a><a class="text-link" href="workflow.html">Follow the workflow <span>→</span></a></div>
+  <p class="eyebrow"><span class="live-dot"></span> Literature data for shock-loaded materials</p>
+  <h1>Hugoniot elastic limit<br><span>and spall strength.</span></h1>
+  <p class="hero-description">Compare published HEL and spall-strength data by material, processing state and loading conditions. Open a record to inspect its measurement method and source.</p>
+  <div class="hero-actions"><a class="button primary" href="explore.html">Open the dynamic map <span>↗</span></a><a class="text-link" href="methods.html">Read the definitions and methods <span>→</span></a></div>
   <div class="hero-plot-wrap">
     <div class="preview-heading"><span>Spall strength × Hugoniot elastic limit</span><a href="explore.html">Open interactive view ↗</a></div>
     <div id="hero-plot" class="hero-plot" aria-label="Preview of the literature material map"></div>
-    <div class="preview-caption"><span>Exact materials. Shared class colours.</span><span>Logarithmic axes · GPa</span></div>
+    <div class="preview-caption"><span>Material clouds, coloured by class</span><span>Logarithmic axes · GPa</span></div>
   </div>
 </section>
 <section class="metrics-strip page-width" aria-label="Current compilation">
-  <div><strong data-count="sources">—</strong><span>registered sources</span></div><div><strong data-count="dynamicSources">—</strong><span>sources with dynamic records</span></div><div><strong data-count="reportedPairs">—</strong><span>reported positive same-shot rows</span></div><div><strong data-count="verified">—</strong><span>visually verified same-shot pairs</span></div>
+  <div><strong data-count="sources">—</strong><span>papers in the source list</span></div><div><strong data-count="dynamicSources">—</strong><span>papers with dynamic records</span></div><div><strong data-count="reportedPairs">—</strong><span>reported HEL–spall pairs</span></div><div><strong data-count="verified">—</strong><span>pairs checked against PDF tables</span></div>
 </section>
 <section class="editorial-section page-width split-intro">
-  <div><p class="eyebrow">A clearer comparison</p><h2>Two properties.<br>A broader perspective.</h2></div>
-  <div class="prose"><p>The Hugoniot elastic limit describes the onset of inelastic response under shock loading. Spall strength describes resistance to tensile failure during release.</p><p>Reading them together reveals where exact materials sit relative to one another, while the underlying test conditions and evidence remain one click away.</p><a class="text-link" href="methods.html">Understand the axes and assumptions →</a></div>
+  <div><p class="eyebrow">What the axes measure</p><h2>HEL and<br>spall strength</h2></div>
+  <div class="prose"><p>HEL is the longitudinal stress at the elastic precursor in a shock experiment. Spall strength is the tensile failure stress inferred from the release-wave history.</p><p>The map compares the onset of inelastic response with resistance to tensile failure. Test method, loading rate, pulse duration and material state affect both quantities and should guide comparisons.</p><a class="text-link" href="methods.html">Read the property definitions →</a></div>
 </section>
 <section class="feature-section"><div class="page-width">
-  <p class="eyebrow">Built to be questioned</p><h2>Go from a cloud<br>to the paper behind it.</h2>
-  <div class="feature-grid"><article><span class="feature-number">01</span><h3>Explore the evidence</h3><p>Filter by material class, exact material and evidence level. Zoom into the map, then inspect a cloud or a verified measurement.</p><a href="explore.html">Open explorer →</a></article><article><span class="feature-number">02</span><h3>Trace every source</h3><p>See author–year references, extraction locations, test conditions and any donor or model used for a missing coordinate.</p><a href="sources.html">Browse the source library →</a></article><article><span class="feature-number">03</span><h3>Keep it growing</h3><p>Add a paper and its reviewed evidence to the repository. The next build updates the map, source library and counts together.</p><a href="contribute.html">See how to add data →</a></article></div>
+  <p class="eyebrow">Using the atlas</p><h2>Compare materials and check sources</h2>
+  <div class="feature-grid"><article><span class="feature-number">01</span><h3>Compare materials</h3><p>Filter by material name, class or evidence level. Switch between material clouds and pairs checked against the original tables.</p><a href="explore.html">Open the dynamic map →</a></article><article><span class="feature-number">02</span><h3>Inspect a record</h3><p>Check its paper, source location and reported test conditions. Estimated or matched coordinates include the model or supporting measurement used.</p><a href="sources.html">Browse papers and records →</a></article><article><span class="feature-number">03</span><h3>Contribute data</h3><p>Add numerical values with primary-source references, property definitions and test conditions. The contribution guide explains the review requirements.</p><a href="contribute.html">Read the contribution guide →</a></article></div>
 </div></section>
-<section class="editorial-section page-width evidence-note"><p class="eyebrow">A necessary distinction</p><h2>Coverage is not confidence.</h2><p>Clouds enclose pooled property extents for a named material. Some use cross-paper matches or a conditional HEL estimate. They are schematic coverage regions, not measured covariance or statistical confidence intervals.</p><p data-coverage-note></p><a class="text-link" href="sources.html#coverage">Inspect coverage by class →</a></section>
-<section class="feature-section"><div class="page-width"><p class="eyebrow">Beyond two axes</p><h2>Connect the properties.<br>Inspect the missing links.</h2><div class="analysis-discussion"><article><h3>Static × dynamic</h3><p>Explore independent static and dynamic material clouds, with a shared class palette and links to every supporting property. Switch to class coverage or measured pairs; single-property materials stay visible.</p><a class="text-link" href="static-dynamic.html">Compare the maps →</a></article><article><h3>Structure explorer</h3><p>Inspect precomputed UMAP and diffusion views with input features, source diagnostics and paper links. Separate descriptive outcome patterns from possible parameter associations.</p><a class="text-link" href="embeddings.html">Explore the dimensions →</a></article></div></div></section>
+<section class="editorial-section page-width evidence-note"><p class="eyebrow">Material clouds</p><h2>What a cloud represents</h2><p>Each cloud summarises the available HEL and spall-strength extents for a named material across studies or conditions. Some bounds use cross-paper matches or a HEL estimate, identified in the selection details. Use clouds to assess literature coverage; use the measured-pair view for coordinates reported from the same test. Cloud shape and area have no statistical interpretation.</p><p data-coverage-note></p><a class="text-link" href="sources.html#coverage">Check coverage by material class →</a></section>
+<section class="feature-section"><div class="page-width"><p class="eyebrow">Other property views</p><h2>Static and multivariable comparisons</h2><div class="analysis-discussion"><article><h3>Static and dynamic maps</h3><p>Compare yield–toughness data with HEL–spall data. Each map uses its own literature population. Material clouds, class coverage and measured condition pairs show different levels of detail.</p><a class="text-link" href="static-dynamic.html">Compare the property maps →</a></article><article><h3>Multivariable views</h3><p>View UMAP and diffusion projections of loading conditions, elastic properties or dynamic results. Select an observation to inspect the input values and its source paper.</p><a class="text-link" href="embeddings.html">Open the data projections →</a></article></div></div></section>
 </main>
   <footer class="site-footer">
-    <div><a class="footer-brand" href="index.html">Dynamic Ashby</a><p>Materials under shock. Evidence in the open.</p></div>
+    <div><a class="footer-brand" href="index.html">Dynamic Ashby</a><p>Published HEL and spall-strength data.</p></div>
     <div class="footer-links"><a href="methods.html">How to read the map</a><a href="data/literature.csv" download>Download CSV ↗</a><a href="admin.html">Admin sources</a><a href="https://github.com/Piyushjhu/Dynamic-Ashby-Atlas" target="_blank" rel="noopener noreferrer">Repository ↗</a></div>
     <p class="build-note" data-build-note>Loading the literature compilation…</p>
   </footer>
